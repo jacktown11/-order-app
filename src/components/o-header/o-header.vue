@@ -12,7 +12,7 @@
         </h1>
         <div class="description">{{seller.description}} / {{seller.deliveryTime}}分钟送达</div>
         <div v-if="seller.supports" class="support">
-          <span class="support-icon" :class="classMap[seller.supports[0].type]"></span>
+          <o-icon class="support-icon" :typeNum="seller.supports[0].type" :suffixNum="1"></o-icon>
           <span class="support-text">{{seller.supports[0].description}}</span>
         </div>
       </div>
@@ -35,28 +35,57 @@
     </div>
 
     <!-- 商家详情信息弹出层 -->
-    <div v-show="isShowDetail" class="seller-detail">
-      <!-- 详情内容 -->
-      <div class="detail-wrapper clearfix">
-        <div class="detail-main">
-          <!-- 商家名标题 -->
-          <h1 class="seller-name">{{seller.name}}</h1>
-          <!-- 评分星条 -->
-          <div class="stars">
-            <o-star-bar :size="48" :score="seller.score"></o-star-bar>
+    <transition name="fade">
+      <div v-show="isShowDetail" class="seller-detail" transition="fade">
+        <!-- 详情内容 -->
+        <div class="detail-wrapper clearfix">
+          <div class="detail-main">
+            <!-- 商家名标题 -->
+            <h1 class="seller-name">{{seller.name}}</h1>
+            <!-- 评分星条 -->
+            <div class="stars">
+              <o-star-bar :size="48" :score="seller.score"></o-star-bar>
+            </div>
+            <!-- 优惠信息 -->
+            <div class="favourable-info">
+              <div class="title">
+                <div class="line"></div>
+                <h2 class="text">优惠信息</h2>
+                <div class="line"></div>
+              </div>
+              <ul v-if="seller.supports" class="list">
+                <li v-for="support in seller.supports" :key="support.type" class="support-item">
+                  <o-icon class="support-icon" :typeNum="support.type" :suffixNum="2"></o-icon>
+                  <span class="text">{{support.description}}</span>
+                </li>
+              </ul>
+            </div>
+            <!-- 商家公告 -->
+            <div class="bulletin-detail">
+              <div class="title">
+                <div class="line"></div>
+                <h2 class="text">商家公告</h2>
+                <div class="line"></div>
+              </div>
+              <div class="bulletion-content">
+                {{seller.bulletin}}
+              </div>
+            </div>
           </div>
         </div>
+        <!-- 关闭 -->
+        <div class="detail-close">
+          <span class="iconfont icon-close" @click="hideDetail"></span>
+        </div>
       </div>
-      <!-- 关闭 -->
-      <div class="detail-close">
-        <span class="iconfont icon-close" @click="hideDetail"></span>
-      </div>
-    </div>
+    </transition>
+
   </div>
 </template>
 
 <script>
 import OStarBar from '@comp/o-star-bar/o-star-bar';
+import OIcon from '@comp/o-icon/o-icon';
 
 export default {
   props: {
@@ -77,11 +106,9 @@ export default {
       this.isShowDetail = false;
     }
   },
-  created () {
-    this.classMap = ['decrease', 'discount', 'special', 'invoice', 'guarantee'];
-  },
   components: {
-    OStarBar
+    OStarBar,
+    OIcon
   }
 };
 </script>
@@ -141,31 +168,9 @@ export default {
       .support
         height: 12px
         line-height: 12px
-
         .support-icon
-          display: inline-block
           vertical-align: top
-          width: 12px
-          height: 12px
           margin-right: 4px
-          background-size: 12px 12px
-          background-repeat: no-repeat
-
-          &.decrease
-            bg-img('decrease_1')
-
-          &.discount
-            bg-img('discount_1')
-
-          &.guarantee
-            bg-img('guarantee_1')
-
-          &.invoice
-            bg-img('invoice_1')
-
-          &.special
-            bg-img('special_1')
-
         .support-text
           font-size: 10px
 
@@ -231,6 +236,13 @@ export default {
       min-width: 100%
       min-height: 100%
 
+  .fade-transition
+    opacity: 0
+  .fade-enter-active, .fade-leave-active
+    transition: opacity .5s
+  .fade-enter, .fade-leave-to
+    opacity: 0;
+
   .seller-detail
     position: fixed
     z-index: 100
@@ -238,15 +250,16 @@ export default {
     left: 0
     width: 100%
     height: 100%
-    background-color: rgba(7, 17, 27, 0.8)
     overflow: auto
+    background-color: rgba(7, 17, 27, 0.8)
+    drop-filter: blur(10px)
 
     .detail-wrapper
       min-height: 100%
       width: 100%
 
       .detail-main
-        margin-top: 64px
+        margin: 64px 10% 0 10%
         padding-bottom: 64px
 
         .seller-name
@@ -258,6 +271,44 @@ export default {
         .stars
           margin-top: 16px
           text-align: center
+
+        .favourable-info, .bulletin-detail
+          .title
+            display: flex
+            margin-top: 28px
+            .line
+              flex: 1
+              position: relative
+              border-bottom: 1px solid rgba(255, 255, 255, 0.2)
+              top: -6px
+
+            .text
+              font-size: 14px
+              font-weight: 700
+              padding: 0 12px
+          .list
+            font-size: 0
+            margin: 24px 12px 0 12px
+
+            .support-item
+              margin-bottom: 12px
+
+              &:last-child
+                margin-bottom: 0
+
+              .support-icon
+                vetical-align: top
+                margin-right: 6px
+
+              .text
+                vertical-align: top
+                font-size: 12px
+                line-height: 16px
+
+          .bulletion-content
+            margin: 24px 12px 0 12px
+            font-size: 12px
+            line-height: 24px
 
     .detail-close
         position: relative
