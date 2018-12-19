@@ -2,9 +2,10 @@
 <div class="goods">
   <div class="menu-wrapper menu-wrapper-hook" ref="menu">
     <ul v-if="goods.length>0">
-      <li class="category-wrapper border-bottom-1px"
-        :class="{current: index === currentIndex}" 
-        v-for="(category, index) in goods" :key="category.name">
+      <li class="category-wrapper border-bottom-1px category-wrapper-hook"
+        :class="{current: index === currentIndex}"
+        v-for="(category, index) in goods" :key="category.name"
+        @click="selectCategory($event, index)">
         <span class="category">
           <o-icon class="category-icon" v-if="category.type >= 0" :typeNum="category.type" :suffixNum="3"></o-icon>
           <span class="name">{{category.name}}</span>
@@ -14,7 +15,10 @@
   </div>
   <div class="goods-wrapper" ref="goods">
     <ul>
-      <li class="food-category-list food-category-list-hook" v-for="foodList in goods" :key="foodList.name">
+      <li
+        class="food-category-list food-category-list-hook"
+        v-for="foodList in goods"
+        :key="foodList.name">
         <h2 class="category-name">{{foodList.name}}</h2>
         <ul class="food-category">
           <li class="food-item" v-for="food in foodList.foods" :key="food.name">
@@ -29,27 +33,35 @@
                 <span class="ratings">好评率{{food.rating}}%</span>
               </p>
               <p class="price">
-                <span class="now">&#65509;<span class="number">{{food.price}}</span></span>
-                <span v-if="food.oldPrice" class="old">&#65509;<span class="number">{{food.oldPrice}}</span></span>
+                <span class="now">&#00165;<span class="number">{{food.price}}</span></span>
+                <span v-if="food.oldPrice" class="old">&#00165;<span class="number">{{food.oldPrice}}</span></span>
               </p>
+              <div class="food-handler-wrapper">
+                <o-food-handler :food="food" @update-cart="updateCart($event)"></o-food-handler>
+              </div>
             </div>
           </li>
         </ul>
       </li>
     </ul>
   </div>
+  <o-shopcart :seller="seller" :cart-content="cartContent"></o-shopcart>
 </div>
 </template>
 
 <script>
-import OIcon from '@comp/o-icon/o-icon';
 import BScroll from 'better-scroll';
+import OIcon from '@comp/o-icon/o-icon';
+import OShopcart from '@comp/o-shopcart/o-shopcart';
+import OFoodHandler from '@comp/o-food-handler/o-food-handler';
 
 const OK_ERRNUM = 0;
 
 export default {
   components: {
-    OIcon
+    OIcon,
+    OShopcart,
+    OFoodHandler
   },
   props: {
     seller: {
@@ -60,7 +72,13 @@ export default {
     return {
       goods: [],
       goodsHeight: [],
-      scrollY: 0
+      scrollY: 0,
+      _menuScroll: null,
+      _goodsScroll: null,
+      _elInGoods: null,
+      _elInMenu: null,
+      isClicked: false, // this will be set to true when click menu, and set to false on foods scroll
+      cartContent: []
     };
   },
   created () {
@@ -72,6 +90,8 @@ export default {
           this.$nextTick(() => {
             this._calculateHeight();
             this._initScroll();
+            this._elInMenu = this.$refs.menu.getElementsByClassName('category-wrapper-hook');
+            this._elInGoods = this.$refs.goods.getElementsByClassName('food-category-list-hook');
           });
         }
       }
@@ -82,19 +102,30 @@ export default {
       let i = 0;
       let y = this.scrollY;
       let hArr = this.goodsHeight;
-      while (!!hArr[i + 1] && y > hArr[i + 1]) i++;
+      while (!!hArr[i + 1] && y >= hArr[i + 1]) i++;
       return i;
+    }
+  },
+  watch: {
+    currentIndex (val) {
+      if (!this.isClicked) {
+        // 不是点击引起的改变（右侧食物列表的滚动引起）
+        // 让对应的食物分类菜单栏跟随滚动高视野中
+        this.scrollToInMenu(this.currentIndex, 300);
+      }
     }
   },
   methods: {
     _initScroll () {
-      this.menuScroll = new BScroll(this.$refs.menu, {
+      this._menuScroll = new BScroll(this.$refs.menu, {
         click: true
       });
-      this.goodsScroll = new BScroll(this.$refs.goods, {
+      this._goodsScroll = new BScroll(this.$refs.goods, {
+        click: true,
         probeType: 3
       });
-      this.goodsScroll.on('scroll', (pos) => {
+      this._goodsScroll.on('scroll', (pos) => {
+        this.isClicked = false;
         this.scrollY = Math.abs(Math.round(pos.y));
       });
     },
@@ -106,6 +137,45 @@ export default {
       for (let i = 0; i < categoryList.length; i++) {
         height += categoryList[i].clientHeight;
         arr.push(height);
+      }
+    },
+    /**
+     * 该函数专门用于直接跳转到某一个分类
+     * 没有动画过程，所以不会触发食物列表的`scroll`事件
+     * scrollY需要手动更新
+     */
+    selectCategory (event, index) {
+      if (!event._constructed) return;
+      this.isClicked = true;
+      this.scrollToInGoods(index, 0);
+      this.scrollY = this.goodsHeight[index];
+    },
+    scrollToInGoods (index, time) {
+      this._goodsScroll.scrollToElement(this._elInGoods[index], time);
+    },
+    scrollToInMenu (index, time) {
+      this._menuScroll.scrollToElement(this._elInMenu[index], time);
+    },
+    updateCart (orderItem) {
+      let { food, count } = orderItem;
+      let len = this.cartContent.length;
+      for (let i = 0; i < len; i++) {
+        let item = this.cartContent[i];
+        // this food already exist
+        if (item.food === food) {
+          // refresh count
+          if (count > 0) {
+            this.$set(this.cartContent, i, orderItem);
+          } else {
+            // count is 0, just remove it
+            this.cartContent.splice(i, 1);
+          }
+          return;
+        }
+      }
+      // a new kind of food is added
+      if (count > 0) {
+        this.cartContent.push(orderItem);
       }
     }
   }
@@ -119,7 +189,7 @@ export default {
   position: absolute
   display: flex
   top: 174px
-  bottom: 47px
+  bottom: 48px
   width: 100%
   overflow: hidden
 
@@ -128,22 +198,29 @@ export default {
     background-color: #f3f5f7
     .category-wrapper
       display: table
-      width: 80px
+      width: 56px
       height: 54px
-      border-bottom-1px(rgba(7, 17, 27, 0.1))
+      padding: 0 12px
       &.current
+        position: relative
+        z-index: 10
+        margin-top: -1px
         background-color: #ffffff
         font-size: 12px
         line-height: 14px
         color: rgb(240, 20, 20)
+        .category
+          border-bottom-none()
+        &:first-child
+          margin-top: 0
       .category
         display: table-cell
         width: 56px
-        padding: 0 12px
         font-size: 12px
         line-height: 14px
         vertical-align: middle
         color: rgb(20, 20, 20)
+        border-bottom-1px(rgba(7, 17, 27, 0.1))
         .category-icon
           position: relative
           vertical-align: top
@@ -179,6 +256,7 @@ export default {
               height: 100%
           .food-info
             flex: 1
+            position: relative
             margin-left: 10px
             .name
               font-size: 14px
@@ -212,4 +290,8 @@ export default {
                 text-decoration: line-through
                 .number
                   font-weight: 70
+            .food-handler-wrapper
+              position: absolute
+              bottom: 0
+              right: 0
 </style>
