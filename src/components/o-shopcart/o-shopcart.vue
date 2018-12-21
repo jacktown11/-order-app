@@ -1,7 +1,7 @@
 <template>
 <div class="shopcart">
   <div class="content-left">
-    <div class="cart-icon-wrapper">
+    <div class="cart-icon-wrapper" @click="toggleDetail">
       <div class="cart-icon" :class="{'highlight': !isEmpty}">
         <span class="icon-shopping_cart"></span>
       </div>
@@ -31,11 +31,39 @@
       </div>
     </transition>
   </div>
+  <transition name="slide">
+    <div class="cart-detail" v-show="isShowDetail">
+      <div class="header">
+        <h2 class="title">购物车</h2>
+        <button class="clear" @click="clearCart">清空</button>
+      </div>
+      <div class="food-list-wrapper" ref="foodListWrapper">
+        <ul class="food-list">
+          <li class="food-item" v-for="food in cartContent" :key="food.name">
+            <h3 class="food-name">{{food.name}}</h3>
+            <span class="food-price"><span class="prefix">&#00165;</span>{{food.price}}</span>
+            <div class="food-handler-wrapper">
+              <o-food-handler :food="food"></o-food-handler>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </transition>
+  <transition name="fade">
+    <div v-show="isShowDetail" class="grey-mask" @click="hideDetail"></div>
+  </transition>
 </div>
 </template>
 
 <script>
+import BScroll from 'better-scroll';
+import OFoodHandler from '@comp/o-food-handler/o-food-handler';
+
 export default {
+  components: {
+    OFoodHandler
+  },
   props: {
     seller: {
       type: Object,
@@ -60,7 +88,8 @@ export default {
         { index: 4, isShow: false, startPos: null }
       ],
       usedBalls: [],
-      tasks: []
+      tasks: [],
+      isShowDetail: false
     };
   },
   mounted () {
@@ -78,7 +107,7 @@ export default {
     },
     foodsPrice () {
       return this.cartContent.reduce((prev, cur) => {
-        return prev + cur.food.price * cur.count;
+        return prev + cur.price * cur.count;
       }, 0);
     },
     totalPrice () {
@@ -101,7 +130,43 @@ export default {
           : `去结算`;
     }
   },
+  watch: {
+    // whether show food order list
+    isShowDetail (val) {
+      let wrapper = this.$refs.foodListWrapper;
+      if (val) {
+        this.$nextTick(() => {
+          if (!this.scroll) {
+            this.scroll = new BScroll(wrapper, {
+              click: true
+            });
+          } else {
+            this.scroll.refresh();
+          }
+        });
+      }
+    },
+    // when cart is cleared somehow, hide the detail
+    isEmpty (val) {
+      if (val) this.isShowDetail = false;
+    }
+  },
   methods: {
+    clearCart () {
+      while (this.cartContent.length > 0) {
+        this.cartContent.pop().count = 0;
+      }
+    },
+    hideDetail () {
+      this.isShowDetail = false;
+    },
+    toggleDetail () {
+      if (this.isEmpty) {
+        this.isShowDetail = false;
+      } else {
+        this.isShowDetail = !this.isShowDetail;
+      }
+    },
     drop (pos) {
       this.tasks.push(pos);
       this.doTask();
@@ -153,6 +218,8 @@ export default {
 </script>
 
 <style scoped lang="stylus">
+@import "~@common/stylus/mixin.styl"
+
 .shopcart
   position: fixed;
   z-index: 50
@@ -161,9 +228,9 @@ export default {
   bottom: 0
   width: 100%
   height: 48px
-  background-color: #141d27
   color: rgba(255, 255, 255, 0.4)
   .content-left
+    background-color: #141d27
     flex: 1
     font-size: 0
     .cart-icon-wrapper, .foods-price, .delivery-price
@@ -226,7 +293,7 @@ export default {
     line-height: 48px
     font-weight: 700
     text-align: center
-    background-color: rgba(255, 255, 255, 0.2)
+    background-color: #2B333B
     &.highlight
       color: #ffffff
       background-color: #00a0dc
@@ -247,4 +314,84 @@ export default {
       transition: all 0.4s linear
       .inner
         transition: all 0.4s cubic-bezier(.51,-0.55,.83,.67)
+  .cart-detail
+    position: absolute
+    left: 0
+    top: 0
+    z-index: -50
+    width: 100%
+    transform: translate3d(0, -100%, 0)
+    .header
+      position: relative
+      height: 40px
+      line-height: 40px
+      background-color: #f3f5f7
+      border-bottom: 1px solid rgba(7, 17, 27, 0.1)
+      padding: 0 18px
+      color: rgb(7, 17, 27)
+      .title
+        font-size: 14px
+        font-weight: 200
+      .clear
+        position: absolute
+        right: 18px
+        top: 0
+        line-height: 40px
+        border: none
+        outline: none
+        background-color: transparent
+        font-size: 12px
+        color: rgb(0, 160, 220)
+    .food-list-wrapper
+      max-height: 240px
+      overflow: hidden
+      background-color: #fff
+      .food-list
+        padding: 0 18px 25px 18px
+        .food-item
+          position: relative
+          width: 100%
+          height: 48px
+          color: rgb(7, 17, 27)
+          border-bottom-1px(rgba(7, 17, 27, 0.1))
+          .food-name
+            font-size: 14px
+            line-height: 24px
+            padding: 12px 0
+          .food-price
+            position: absolute
+            top: 0
+            right: 74px
+            padding: 12px 12px 12px 18px
+            font-size: 14px
+            font-weight: 700
+            color: rgb(240, 20, 20)
+            line-height: 24px
+            .prefix
+              font-size: 10px
+              font-weight: normal
+          .food-handler-wrapper
+            position: absolute
+            right: 0
+            top: 0
+            line-height: 24px
+            padding: 10px 0
+  .slide-enter, .slide-leave-to
+    transform: translate3d(0, 0, 0)
+  .slide-enter-active, .slide-leave-active
+    transition: all 0.5s
+  .grey-mask
+    position: fixed
+    left: 0
+    top: 0
+    z-index: -55
+    width: 100%
+    height: 100%
+    background-color: rgba(7, 17, 27, 0.6)
+    backdrop-filter: blur(10px)
+  .fade-enter, .fade-leave-to
+    opacity: 0
+    background-color: rgba(7, 17, 27, 0)
+  .fade-enter-active, .fade-leave-active
+    transition: all 0.4s
 </style>

@@ -7,7 +7,7 @@
       </div>
     </div>
   </transition>
-  <div v-show="!isEmpty" class="count">{{count}}</div>
+  <div v-show="!isEmpty" class="count">{{food.count}}</div>
   <div class="increase" @click="add" ref="increase">
     <span class="icon-add_circle"></span>
   </div>
@@ -15,6 +15,8 @@
 </template>
 
 <script>
+import Vue from 'vue';
+
 export default {
   props: {
     food: {
@@ -24,36 +26,29 @@ export default {
       }
     }
   },
-  data () {
-    return {
-      count: 0
-    };
-  },
   computed: {
     isEmpty () {
-      return this.count === 0;
-    }
-  },
-  watch: {
-    count (newVal, oldVal) {
-      this.$emit('update-cart', {
-        food: this.food,
-        count: this.count
-      });
+      return !this.food.count;
     }
   },
   methods: {
     add () {
-      this.count++;
+      // add food count
+      if (!this.food.count) {
+        Vue.set(this.food, 'count', 1);
+      } else {
+        this.food.count++;
+      }
+
+      // trigger animation
       let rect = this.$refs.increase.getBoundingClientRect();
       this.$emit('add-animate', {
         x: rect.left + 14,
         y: rect.top + 14
       });
-
     },
     minus () {
-      if (this.count > 0) this.count--;
+      if (this.food.count > 0) this.food.count--;
     }
   }
 };

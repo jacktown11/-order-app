@@ -81,8 +81,7 @@ export default {
       _goodsScroll: null,
       _elInGoods: null,
       _elInMenu: null,
-      isClicked: false, // this will be set to true when click menu, and set to false on foods scroll
-      cartContent: []
+      isClicked: false // this will be set to true when click menu, and set to false on foods scroll
     };
   },
   created () {
@@ -108,6 +107,15 @@ export default {
       let hArr = this.goodsHeight;
       while (!!hArr[i + 1] && y >= hArr[i + 1]) i++;
       return i;
+    },
+    cartContent () {
+      let res = [];
+      this.goods.forEach((good) => {
+        good.foods.forEach((food) => {
+          if (food.count) res.push(food);
+        });
+      });
+      return res;
     }
   },
   watch: {
@@ -159,28 +167,6 @@ export default {
     },
     scrollToInMenu (index, time) {
       this._menuScroll.scrollToElement(this._elInMenu[index], time);
-    },
-    updateCart (orderItem) {
-      let { food, count } = orderItem;
-      let len = this.cartContent.length;
-      for (let i = 0; i < len; i++) {
-        let item = this.cartContent[i];
-        // this food already exist
-        if (item.food === food) {
-          // refresh count
-          if (count > 0) {
-            this.$set(this.cartContent, i, orderItem);
-          } else {
-            // count is 0, just remove it
-            this.cartContent.splice(i, 1);
-          }
-          return;
-        }
-      }
-      // a new kind of food is added
-      if (count > 0) {
-        this.cartContent.push(orderItem);
-      }
     },
     addAnimate (pos) {
       this.$refs.cartContent.drop(pos);
