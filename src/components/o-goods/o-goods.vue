@@ -37,7 +37,10 @@
                 <span v-if="food.oldPrice" class="old">&#00165;<span class="number">{{food.oldPrice}}</span></span>
               </p>
               <div class="food-handler-wrapper">
-                <o-food-handler :food="food" @update-cart="updateCart($event)"></o-food-handler>
+                <o-food-handler
+                  :food="food"
+                  @update-cart="updateCart($event)"
+                  @add-animate="addAnimate($event)"></o-food-handler>
               </div>
             </div>
           </li>
@@ -45,7 +48,8 @@
       </li>
     </ul>
   </div>
-  <o-shopcart :seller="seller" :cart-content="cartContent"></o-shopcart>
+  <o-shopcart :seller="seller" :cart-content="cartContent"
+  ref="cartContent"></o-shopcart>
 </div>
 </template>
 
@@ -177,6 +181,9 @@ export default {
       if (count > 0) {
         this.cartContent.push(orderItem);
       }
+    },
+    addAnimate (pos) {
+      this.$refs.cartContent.drop(pos);
     }
   }
 };
