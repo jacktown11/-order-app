@@ -30,6 +30,7 @@
       class="content-right"
       :class="{'highlight': isEnough}"
       v-html="stateStr"
+      @click="pay"
     ></div>
     <div class="ball-container">
       <transition
@@ -205,6 +206,12 @@ export default {
         this.isShowDetail = false;
       } else {
         this.isShowDetail = !this.isShowDetail;
+      }
+    },
+    pay() {
+      if (this.isEnough) {
+        this.clearCart();
+        window.alert('这次帮你买好单了，等着享用吧:)');
       }
     },
     drop(pos) {

@@ -15,8 +15,8 @@ module.exports = {
    * baseUrl: process.env.NODE_ENV==='production'?"https://cdn.didabisai.com/front/":'front/',
    */
   // 基本路径
-  // baseUrl: process.env.NODE_ENV === 'production' ? "https://jacktown11.github.io/order-app/" : '/',
-  baseUrl: process.env.NODE_ENV === 'production' ? "http://127.0.0.1/projects/order-app/dist/" : '/',
+  // baseUrl: process.env.NODE_ENV === 'production' ? "/order-app/" : '/',
+  baseUrl: process.env.NODE_ENV === 'production' ? "/projects/order-app/dist/" : '/',
   // 输出文件目录
   outputDir: 'dist',
   // eslint-loader 是否在保存的时候检查
