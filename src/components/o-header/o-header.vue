@@ -3,7 +3,10 @@
     <!-- 商家图标和概览信息 -->
     <div class="content-wrapper">
       <div class="seller-avatar">
-        <img :src="seller.avatar" alt="商家封面">
+        <img
+          :src="seller.avatar"
+          alt="商家封面"
+        >
       </div>
       <div class="seller-content">
         <h1 class="title">
@@ -11,19 +14,33 @@
           <span class="title-text">{{seller.name}}</span>
         </h1>
         <div class="description">{{seller.description}} / {{seller.deliveryTime}}分钟送达</div>
-        <div v-if="seller.supports" class="support">
-          <o-icon class="support-icon" :typeNum="seller.supports[0].type" :suffixNum="1"></o-icon>
+        <div
+          v-if="seller.supports"
+          class="support"
+        >
+          <base-icon
+            class="support-icon"
+            :typeNum="seller.supports[0].type"
+            :suffixNum="1"
+          ></base-icon>
           <span class="support-text">{{seller.supports[0].description}}</span>
         </div>
       </div>
-      <div v-if="seller.supports" class="support-more" @click="showDetail">
+      <div
+        v-if="seller.supports"
+        class="support-more"
+        @click="showDetail"
+      >
         {{seller.supports.length}}个
         <span class="iconfont icon-keyboard_arrow_right"></span>
       </div>
     </div>
 
     <!-- 商家公告 -->
-    <div class="bulletin" @click="showDetail">
+    <div
+      class="bulletin"
+      @click="showDetail"
+    >
       <span class="bulletin-title"></span>
       <span class="bulletin-sample">{{seller.bulletin}}</span>
       <span class="bulletin-detail iconfont icon-keyboard_arrow_right"></span>
@@ -31,12 +48,19 @@
 
     <!-- header的背景图片 -->
     <div class="background">
-      <img :src="seller.avatar" alt="商家图片背景">
+      <img
+        :src="seller.avatar"
+        alt="商家图片背景"
+      >
     </div>
 
     <!-- 商家详情信息弹出层 -->
     <transition name="fade">
-      <div v-show="isShowDetail" class="seller-detail" transition="fade">
+      <div
+        v-show="isShowDetail"
+        class="seller-detail"
+        transition="fade"
+      >
         <!-- 详情内容 -->
         <div class="detail-wrapper clearfix">
           <div class="detail-main">
@@ -44,7 +68,10 @@
             <h1 class="seller-name">{{seller.name}}</h1>
             <!-- 评分星条 -->
             <div class="stars">
-              <o-star-bar :size="48" :score="seller.score"></o-star-bar>
+              <base-star-bar
+                :size="48"
+                :score="seller.score"
+              ></base-star-bar>
             </div>
             <!-- 优惠信息 -->
             <div class="favourable-info">
@@ -53,9 +80,20 @@
                 <h2 class="text">优惠信息</h2>
                 <div class="line"></div>
               </div>
-              <ul v-if="seller.supports" class="list">
-                <li v-for="support in seller.supports" :key="support.type" class="support-item">
-                  <o-icon class="support-icon" :typeNum="support.type" :suffixNum="2"></o-icon>
+              <ul
+                v-if="seller.supports"
+                class="list"
+              >
+                <li
+                  v-for="support in seller.supports"
+                  :key="support.type"
+                  class="support-item"
+                >
+                  <base-icon
+                    class="support-icon"
+                    :typeNum="support.type"
+                    :suffixNum="2"
+                  ></base-icon>
                   <span class="text">{{support.description}}</span>
                 </li>
               </ul>
@@ -75,7 +113,10 @@
         </div>
         <!-- 关闭 -->
         <div class="detail-close">
-          <span class="iconfont icon-close" @click="hideDetail"></span>
+          <span
+            class="iconfont icon-close"
+            @click="hideDetail"
+          ></span>
         </div>
       </div>
     </transition>
@@ -84,8 +125,8 @@
 </template>
 
 <script>
-import OStarBar from '@comp/o-star-bar/o-star-bar';
-import OIcon from '@comp/o-icon/o-icon';
+import BaseStarBar from '@comp/base/base-star-bar/base-star-bar';
+import BaseIcon from '@comp/base/base-icon/base-icon';
 
 export default {
   props: {
@@ -93,22 +134,22 @@ export default {
       type: Object
     }
   },
-  data () {
+  data() {
     return {
       isShowDetail: false
     };
   },
   methods: {
-    showDetail () {
+    showDetail() {
       this.isShowDetail = true;
     },
-    hideDetail () {
+    hideDetail() {
       this.isShowDetail = false;
     }
   },
   components: {
-    OStarBar,
-    OIcon
+    BaseStarBar,
+    BaseIcon
   }
 };
 </script>
@@ -168,9 +209,11 @@ export default {
       .support
         height: 12px
         line-height: 12px
+
         .support-icon
           vertical-align: top
           margin-right: 4px
+
         .support-text
           font-size: 10px
 
@@ -238,10 +281,12 @@ export default {
 
   .fade-transition
     opacity: 0
+
   .fade-enter-active, .fade-leave-active
-    transition: opacity .5s
+    transition: opacity 0.5s
+
   .fade-enter, .fade-leave-to
-    opacity: 0;
+    opacity: 0
 
   .seller-detail
     position: fixed
@@ -276,6 +321,7 @@ export default {
           .title
             display: flex
             margin-top: 28px
+
             .line
               flex: 1
               position: relative
@@ -286,6 +332,7 @@ export default {
               font-size: 14px
               font-weight: 700
               padding: 0 12px
+
           .list
             font-size: 0
             margin: 24px 12px 0 12px
@@ -311,13 +358,13 @@ export default {
             line-height: 24px
 
     .detail-close
-        position: relative
-        width: 32px
-        height: 32px
-        margin: -64px auto 0 auto
-        clear: both
-        text-align: center
-        font-size: 32px
-        padding-bottom: 32px
-        color: rgba(255, 255, 255, 0.5)
+      position: relative
+      width: 32px
+      height: 32px
+      margin: -64px auto 0 auto
+      clear: both
+      text-align: center
+      font-size: 32px
+      padding-bottom: 32px
+      color: rgba(255, 255, 255, 0.5)
 </style>

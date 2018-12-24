@@ -1,17 +1,31 @@
 <template>
-<div class="food-handler">
-  <transition name="move">
-    <div v-show="!isEmpty" class="decrease" @click="minus">
-      <div class="inner">
-        <span class="icon-remove_circle_outline"></span>
+  <div
+    class="food-handler"
+    @click.stop
+  >
+    <transition name="move">
+      <div
+        v-show="!isEmpty"
+        class="decrease"
+        @click="minus"
+      >
+        <div class="inner">
+          <span class="icon-remove_circle_outline"></span>
+        </div>
       </div>
+    </transition>
+    <div
+      v-show="!isEmpty"
+      class="count"
+    >{{food.count}}</div>
+    <div
+      class="increase"
+      @click="add"
+      ref="increase"
+    >
+      <span class="icon-add_circle"></span>
     </div>
-  </transition>
-  <div v-show="!isEmpty" class="count">{{food.count}}</div>
-  <div class="increase" @click="add" ref="increase">
-    <span class="icon-add_circle"></span>
   </div>
-</div>
 </template>
 
 <script>
@@ -21,18 +35,18 @@ export default {
   props: {
     food: {
       type: Object,
-      default () {
+      default() {
         return {};
       }
     }
   },
   computed: {
-    isEmpty () {
+    isEmpty() {
       return !this.food.count;
     }
   },
   methods: {
-    add () {
+    add() {
       // add food count
       if (!this.food.count) {
         Vue.set(this.food, 'count', 1);
@@ -47,7 +61,7 @@ export default {
         y: rect.top + 14
       });
     },
-    minus () {
+    minus() {
       if (this.food.count > 0) this.food.count--;
     }
   }
@@ -58,6 +72,10 @@ export default {
 .food-handler
   font-size: 0
   position: relative
+  width: 76px
+  height: 28px
+  text-align: right
+
   .decrease, .count, .increase
     display: inline-block
     vertical-align: top
@@ -68,29 +86,38 @@ export default {
     color: rgb(0, 160, 220)
     line-height: 24px
     text-align: center
+
   .decrease
     position: absolute
     right: 52px
     top: 0
+
     .inner
       width: 100%
       height: 100%
+
       .icon-remove_circle_outline
         display: inline-block
         width: 100%
         height: 100%
+
   .count
     text-align: center
     font-size: 10px
     color: rgb(147, 153, 159)
+
   .increase
     padding: 2px
+
   .move-enter, .move-leave-to
-    transform: translate3d(50px, 0 , 0)
+    transform: translate3d(50px, 0, 0)
+
     .inner
       transform: rotate(180deg)
+
   .move-enter-active, .move-leave-active
     transition: all 0.3s
+
     .inner
       transition: all 0.3s
 </style>

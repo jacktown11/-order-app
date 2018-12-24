@@ -6,7 +6,7 @@ const mockData = require('./mock/data.json')
 
 function resolve (folder) {
   return path.join(__dirname, folder)
-}  
+}
 
 module.exports = {
   /** 区分打包环境与开发环境
@@ -31,7 +31,7 @@ module.exports = {
         '@common': resolve('src/common'),
       }
     }
-   },
+  },
   //如果想要引入babel-polyfill可以这样写
   // configureWebpack: (config) => {
   //   config.entry = ["babel-polyfill", "./src/main.js"]
@@ -71,7 +71,7 @@ module.exports = {
         }
       }
     },
-    before: app => { 
+    before: app => {
       const apiRoutes = express.Router()
       const pathArr = ['/seller', '/goods', '/ratings']
       pathArr.forEach((urlPath) => {

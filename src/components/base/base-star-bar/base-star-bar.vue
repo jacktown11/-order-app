@@ -1,5 +1,8 @@
 <template>
-  <div class="star-bar" :class="starType">
+  <div
+    class="star-bar"
+    :class="starType"
+  >
     <span
       v-for="(classItem, index) in starClassArr"
       class="star-item"
@@ -25,10 +28,10 @@ export default {
     }
   },
   computed: {
-    starType () {
+    starType() {
       return 'star-' + this.size;
     },
-    starClassArr () {
+    starClassArr() {
       let res = [];
       let score = this.score;
       while (score >= 1) {
@@ -54,10 +57,13 @@ export default {
     background-repeat: no-repeat
 
 &.star-24
+  heihgt: 10px
+  line-height: 10px
+
   .star-item
     width: 10px
     height: 10px
-    margin-right: 6px
+    margin-right: 4px
     background-size: 10px 10px
 
     &:last-child
@@ -73,10 +79,13 @@ export default {
       bg-img('star24_off')
 
 &.star-36
+  height: 15px
+  line-height: 15px
+
   .star-item
     width: 15px
     height: 15px
-    margin-right: 9px
+    margin-right: 6px
     background-size: 15px 15px
 
     &:last-child
@@ -92,6 +101,9 @@ export default {
       bg-img('star36_off')
 
 &.star-48
+  height: 20px
+  line-height: 20px
+
   .star-item
     width: 20px
     height: 20px
