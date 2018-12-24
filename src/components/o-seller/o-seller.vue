@@ -35,7 +35,7 @@
             <p
               class="store-state"
               @click="toggleStore"
-            >{{isStored? '已收藏' : '点击收藏'}}</p>
+            >{{isStored? '已收藏' : '收藏'}}</p>
           </div>
         </div>
         <div class="content-bottom">
@@ -117,7 +117,7 @@
       </div>
 
       <!-- 商家信息 -->
-      <div class="info">
+      <div class="seller-info">
         <h2 class="title">商家信息</h2>
         <ul class="info-content">
           <li
@@ -133,6 +133,7 @@
 
 <script>
 import BScroll from 'better-scroll';
+import { getSeller, setSeller } from '@common/js/util';
 
 import BaseStarBar from '@comp/base/base-star-bar/base-star-bar';
 import BaseSplit from '@comp/base/base-split/base-split';
@@ -154,37 +155,51 @@ export default {
   },
   data() {
     return {
-      isStored: false
+      isStored: (() => {
+        return !!this.seller.id && getSeller(this.seller.id, 'isStored', false);
+      })()
     };
   },
   mounted() {
     this.allScroll = new BScroll(this.$refs.scrollWrapper, {
       click: true
     });
-
-    this.$nextTick(() => {
-      this.imagesScroll = new BScroll(this.$refs.imagesWrapper, {
-        scrollX: true
-      });
-    });
+    this._setImagesScroll();
   },
-  updated() {
-    this._refreshImageWrapper();
+  watch: {
+    seller() {
+      this._setImagesScroll();
+    }
   },
   methods: {
-    _refreshImageWrapper() {
-      let imageList = this.$refs.imageList;
-      let childNodes = imageList.childNodes;
-      let width = 0;
-      for (let i = 0; i < childNodes.length; i++) {
-        width += childNodes[i].getBoundingClientRect().width;
+    _setImagesScroll() {
+      // if has got seller's data
+      if (this.seller.pics) {
+        let w = 120;
+        let m = 6;
+        let count = this.seller.pics.length;
+        let imageList = this.$refs.imageList;
+        let width = (w + m) * count - m;
+        imageList.style.width = width + 'px';
       }
-      imageList.style.width = width + 'px';
-      this.imagesScroll.refresh();
+
+      // init scroll in next tick
+      this.$nextTick(() => {
+        if (!this.imagesScroll) {
+          this.imagesScroll = new BScroll(this.$refs.imagesWrapper, {
+            scrollX: true,
+            eventPassThrough: 'vertical'
+          });
+        } else {
+          this.imagesScroll.refresh();
+        }
+      });
     },
     toggleStore(event) {
-      if (!event._constructed) return;
-      this.isStored = !this.isStored;
+      if (event._constructed) {
+        this.isStored = !this.isStored;
+        setSeller(this.seller.id, 'isStored', this.isStored);
+      }
     }
   }
 };
@@ -197,7 +212,7 @@ export default {
   position: absolute
   left: 0
   top: 174px
-  bottom: 48px
+  bottom: 0
   width: 100%
   overflow: hidden
 
@@ -254,7 +269,7 @@ export default {
           .store-icon
             font-size: 24px
             line-height: 24px
-            color: rgba(0, 160, 220, 0.3)
+            color: #d4d6d9
 
             .icon-favorite
               padding: 0 5px
@@ -356,7 +371,7 @@ export default {
               &:last-child
                 margin-right: 0
 
-    .info
+    .seller-info
       margin: 18px
 
       .title

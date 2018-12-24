@@ -57,6 +57,8 @@ import BaseStarBar from '@comp/base/base-star-bar/base-star-bar';
 import BaseSplit from '@comp/base/base-split/base-split';
 import ORatingPanel from '@comp/o-rating-panel/o-rating-panel';
 
+const ERR_OK = 0;
+
 export default {
   components: {
     ORatingPanel,
@@ -78,10 +80,12 @@ export default {
   },
   created() {
     this.$http.get('/api/ratings').then(res => {
-      this.ratings = res.body.data;
-      this.$nextTick(() => {
-        if (this.scroll) this.scroll.refresh();
-      });
+      if (res.body.errNum === ERR_OK) {
+        this.ratings = res.body.data;
+        this.$nextTick(() => {
+          if (!this.scroll) this.scroll.refresh();
+        });
+      }
     });
   },
   mounted() {
@@ -103,7 +107,7 @@ export default {
 .ratings-wrapper
   position: absolute
   top: 174px
-  bottom: 48px
+  bottom: 0
   width: 100%
   overflow: hidden
 

@@ -31,11 +31,13 @@
         class="thumb"
         :class="thumbCls"
       ></span>
-      <span
-        class="recommend-item"
-        v-for="item in rating.recommend"
-        :key="item"
-      >{{item}}</span>
+      <template v-if="rating.recommend && rating.recommend.length > 0">
+        <span
+          class="recommend-item"
+          v-for="item in rating.recommend"
+          :key="item"
+        >{{item}}</span>
+      </template>
     </div>
   </div>
 </template>

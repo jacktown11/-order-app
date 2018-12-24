@@ -31,5 +31,3 @@ export function formatDate(date, fmt) {
   }
   return fmt;
 }
-
-console.log(formatDate(new Date(), 'yyyy-MM-dd hh:mm'));

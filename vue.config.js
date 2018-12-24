@@ -2,9 +2,9 @@ const path = require('path')
 const express = require('express')
 
 // mock code
-const mockData = require('./mock/data.json')
+const mockData = require('./public/mock/data.json')
 
-function resolve (folder) {
+function resolve(folder) {
   return path.join(__dirname, folder)
 }
 
@@ -15,7 +15,7 @@ module.exports = {
    * baseUrl: process.env.NODE_ENV==='production'?"https://cdn.didabisai.com/front/":'front/',
    */
   // 基本路径
-  baseUrl: '/',
+  baseUrl: process.env.NODE_ENV === 'production' ? "http://127.0.0.1/projects/order-app/dist/" : '/',
   // 输出文件目录
   outputDir: 'dist',
   // eslint-loader 是否在保存的时候检查

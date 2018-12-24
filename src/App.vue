@@ -19,6 +19,7 @@
 </template>
 
 <script>
+import { parseUrl } from '@common/js/util';
 import OHeader from '@comp/o-header/o-header';
 
 const OK_ERRNUM = 0;
@@ -26,18 +27,22 @@ const OK_ERRNUM = 0;
 export default {
   data() {
     return {
-      seller: {}
+      seller: {
+        id: (() => {
+          return parseUrl().id || 1000;
+        })()
+      }
     };
   },
   components: {
     OHeader
   },
   created() {
-    this.$http.get('/api/seller').then(
+    this.$http.get('/api/seller?id=' + this.seller.id).then(
       res => {
         let body = res.body;
         if (body.errNum === OK_ERRNUM) {
-          this.seller = body.data;
+          this.seller = Object.assign({}, this.seller, body.data);
         }
       },
       err => {
