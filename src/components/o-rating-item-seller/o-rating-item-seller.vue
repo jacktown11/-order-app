@@ -9,8 +9,8 @@
         >
       </div>
       <p class="username">{{rating.username}}</p>
-      <div class="rate-time-wrapper">
-        <base-time :time="rating.delivery"></base-time>
+      <div class="o-rate-time-wrapper">
+        <base-time :time="rating.rateTime"></base-time>
       </div>
     </div>
     <div class="rating-star">
@@ -41,15 +41,15 @@
 </template>
 
 <script>
-import BaseTime from '@comp/base/base-time/base-time';
 import BaseStarBar from '@comp/base/base-star-bar/base-star-bar';
+import BaseTime from '@comp/base/base-time/base-time';
 
 const GOOD = 0;
 const BAD = 1;
 export default {
   components: {
-    BaseTime,
-    BaseStarBar
+    BaseStarBar,
+    BaseTime
   },
   props: {
     rating: {
@@ -97,7 +97,7 @@ export default {
       color: rgb(7, 17, 27)
       line-height: 12px
 
-    .rate-time-wrapper
+    .o-rate-time-wrapper
       width: 100%
       text-align: right
 

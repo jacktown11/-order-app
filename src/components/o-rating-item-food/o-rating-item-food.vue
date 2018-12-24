@@ -1,8 +1,8 @@
 <template>
   <div class="wrapper">
     <div class="about">
-      <div class="base-time-wrapper">
-        <base-time :timeStr="rating.rateTime"></base-time>
+      <div class="rate-time-wrapper">
+        <base-time :time="rating.rateTime"></base-time>
       </div>
       <div class="username">{{rating.username}}</div>
       <div class="user-avatar">
@@ -60,7 +60,7 @@ export default {
     line-height: 12px
     color: rgb(147, 153, 159)
 
-    .time
+    .rate-time-wrapper
       flex: 2
 
     .username

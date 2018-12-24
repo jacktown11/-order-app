@@ -40,6 +40,10 @@
           ></o-rating-item-seller>
         </li>
       </ul>
+      <div
+        class="no-rating"
+        v-show="!ratings || ratings.length === 0"
+      >暂无评论</div>
     </div>
   </div>
 </template>
@@ -119,14 +123,9 @@ export default {
     filteredRatings() {
       return this.ratings.filter(rating => {
         if (this.onlyShowText && !rating.text) return false;
-        switch (this.selectedType) {
-          case GOOD:
-            return rating.rateType === GOOD;
-          case BAD:
-            return rating.rateType === BAD;
-          default:
-            return true;
-        }
+        return (
+          this.selectedType === ALL || this.selectedType === rating.rateType
+        );
       });
     }
   },
@@ -218,4 +217,10 @@ export default {
     .rating-list
       .o-food-rating-item-wrapper
         border-bottom-1px(rgba(7, 17, 27, 0.1))
+
+    .no-rating
+      padding: 18px 0
+      font-size: 12px
+      color: rgb(147, 153, 159)
+      text-align: center
 </style>

@@ -3,6 +3,8 @@
 </template>
 
 <script>
+import { formatDate } from '@common/js/date';
+
 export default {
   props: {
     time: {
@@ -12,18 +14,7 @@ export default {
   },
   computed: {
     formattedTime() {
-      let t = new Date(this.time);
-      return (
-        t.getFullYear() +
-        '-' +
-        (t.getMonth() + 1) +
-        '-' +
-        (t.getDay() + 1) +
-        ' ' +
-        t.getHours() +
-        ':' +
-        t.getMinutes()
-      );
+      return formatDate(new Date(this.time), 'yyyy-MM-dd hh:mm');
     }
   }
 };

@@ -99,6 +99,9 @@ export default {
   mounted() {
     this._initScroll();
   },
+  updated() {
+    this._scroll.refresh();
+  },
   methods: {
     hideFood() {
       this.$emit('hide-food');
@@ -143,6 +146,8 @@ export default {
           left: 0
           top: 5px
           z-index: 55
+          width: 20px
+          height: 20px
           padding: 10px
           color: #fff
           background-color: rgba(0, 0, 0, 0.3)
