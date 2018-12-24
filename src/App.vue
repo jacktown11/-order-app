@@ -40,9 +40,8 @@ export default {
   created() {
     this.$http.get('/api/seller?id=' + this.seller.id).then(
       res => {
-        let body = res.body;
-        if (body.errNum === OK_ERRNUM) {
-          this.seller = Object.assign({}, this.seller, body.data);
+        if (res.data && res.data.errNum == OK_ERRNUM) {
+          this.seller = Object.assign({}, this.seller, res.data.data);
         }
       },
       err => {

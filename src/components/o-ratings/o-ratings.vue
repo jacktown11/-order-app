@@ -80,8 +80,9 @@ export default {
   },
   created() {
     this.$http.get('/api/ratings').then(res => {
-      if (res.body.errNum === ERR_OK) {
-        this.ratings = res.body.data;
+      let data = res.data;
+      if (data && data.errNum === ERR_OK) {
+        this.ratings = data.data;
         this.$nextTick(() => {
           if (!this.scroll) this.scroll.refresh();
         });

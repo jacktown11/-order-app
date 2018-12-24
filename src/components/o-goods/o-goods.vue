@@ -136,7 +136,7 @@ export default {
   },
   created() {
     this.$http.get('/api/goods').then(res => {
-      let data = res.body;
+      let data = res.data;
       if (data.errNum === OK_ERRNUM) {
         this.goods = data.data;
         this.$nextTick(() => {

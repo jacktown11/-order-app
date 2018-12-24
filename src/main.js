@@ -1,14 +1,13 @@
 import Vue from 'vue';
-import VueResource from 'vue-resource';
-import App from './App.vue';
-
+import axios from 'axios';
 import router from '@src/router';
 
+import '@src/api/config';
+import App from './App.vue';
 import '@common/stylus/index.styl';
 
 Vue.config.productionTip = false;
-
-Vue.use(VueResource);
+Vue.prototype.$http = axios;
 
 new Vue({
   render: h => h(App),
