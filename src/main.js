@@ -8,7 +8,6 @@ import '@common/stylus/index.styl';
 
 Vue.config.productionTip = false;
 Vue.prototype.$http = axios;
-
 new Vue({
   render: h => h(App),
   router
